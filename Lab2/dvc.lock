@@ -1,0 +1,90 @@
+schema: '2.0'
+stages:
+  ingest:
+    cmd: python src/data_ingestion.py
+    deps:
+    - path: HousingData.csv
+      hash: md5
+      md5: 9d9460d994e88c868ee98ea23e6c4111
+      size: 35008
+    - path: src/data_ingestion.py
+      hash: md5
+      md5: 58e5ba8d631c6f08b863e84ef2b8d37e
+      size: 130
+    outs:
+    - path: raw.csv
+      hash: md5
+      md5: dda2e29fc7dca935c0b63b52e6d068fe
+      size: 37134
+  preprocess:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - path: raw.csv
+      hash: md5
+      md5: dda2e29fc7dca935c0b63b52e6d068fe
+      size: 37134
+    - path: src/data_preprocessing.py
+      hash: md5
+      md5: 7b5c507798a443d5506f508e7b05e4bb
+      size: 209
+    outs:
+    - path: processed.csv
+      hash: md5
+      md5: 43d20077095d5bc4b090949a97a646af
+      size: 37934
+  features:
+    cmd: python src/feature_engineering.py
+    deps:
+    - path: processed.csv
+      hash: md5
+      md5: 43d20077095d5bc4b090949a97a646af
+      size: 37934
+    - path: src/feature_engineering.py
+      hash: md5
+      md5: 7ac11bfbb261320d28b94eb5241cca67
+      size: 493
+    outs:
+    - path: test.csv
+      hash: md5
+      md5: fdfb693c689d8b3ad92566ad5d94b61e
+      size: 7708
+    - path: train.csv
+      hash: md5
+      md5: 956dc8a8704e1dee98505782d5372538
+      size: 30290
+  train:
+    cmd: python src/model_building.py
+    deps:
+    - path: src/model_building.py
+      hash: md5
+      md5: 0f9b33af00929d86f4a9d01f461a690e
+      size: 282
+    - path: train.csv
+      hash: md5
+      md5: 956dc8a8704e1dee98505782d5372538
+      size: 30290
+    outs:
+    - path: model.pkl
+      hash: md5
+      md5: 75443d0ecab4d9fc18fe37a219cebfc0
+      size: 1089
+  evaluate:
+    cmd: python src/model_evaluation.py
+    deps:
+    - path: model.pkl
+      hash: md5
+      md5: 75443d0ecab4d9fc18fe37a219cebfc0
+      size: 1089
+    - path: src/model_evaluation.py
+      hash: md5
+      md5: cabf42d88b2118e4dd1a2fa6e7deb42c
+      size: 444
+    - path: test.csv
+      hash: md5
+      md5: fdfb693c689d8b3ad92566ad5d94b61e
+      size: 7708
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 61c2003bba33ac16aa22d42501b9b0cb
+      size: 66
